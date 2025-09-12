@@ -23,5 +23,12 @@ namespace Pantallas_Sistema_facturaciónn
             frm.StartPosition = FormStartPosition.CenterScreen;
             frm.Show(this);
         }
+
+        private void seguridadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var frm = new FormSeguridad();
+            frm.StartPosition = FormStartPosition.CenterScreen;
+            frm.Show(this);
+        }
     }
 }
