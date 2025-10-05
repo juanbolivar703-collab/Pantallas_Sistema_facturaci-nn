@@ -30,5 +30,12 @@ namespace Pantallas_Sistema_facturaciónn
             frm.StartPosition = FormStartPosition.CenterScreen;
             frm.Show(this);
         }
+
+        private void empleadosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var frm = new frmListaEmpleados();
+            frm.StartPosition = FormStartPosition.CenterScreen;
+            frm.ShowDialog(this);
+        }
     }
 }

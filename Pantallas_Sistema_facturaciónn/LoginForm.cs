@@ -8,11 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Pantallas_Sistema_facturaciónn.Clases;
+
 
 namespace Pantallas_Sistema_facturaciónn
 {
     public partial class LoginForm : Form
     {
+
+        private readonly UsuariosLogica logica = new UsuariosLogica();
+
+
         public LoginForm()
         {
             InitializeComponent();
@@ -44,36 +50,21 @@ namespace Pantallas_Sistema_facturaciónn
                 return;
             }
 
-            try
+            var usuario = logica.Validar(txtUsuario.Text.Trim(), txtContrasena.Text.Trim());
+            if (usuario != null)
             {
-                using (var cn = Conexion.GetConnection())
-                using (var cmd = cn.CreateCommand())
-                {
-                    cn.Open();
-                    cmd.CommandText = "SELECT COUNT(1) FROM TBLSEGURIDAD WHERE StrUsuario = @u AND StrClave = @p";
-                    cmd.Parameters.AddWithValue("@u", txtUsuario.Text.Trim());
-                    cmd.Parameters.AddWithValue("@p", txtContrasena.Text.Trim());
-
-                    int existe = (int)cmd.ExecuteScalar();
-                    if (existe > 0)
-                    {
-                        Session.CurrentUser = txtUsuario.Text.Trim();
-                        var frm = new FormPrincipal();
-                        frm.StartPosition = FormStartPosition.CenterScreen;
-                        frm.Show();
-                        this.Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Usuario o contraseña incorrectos", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
+                Session.CurrentUser = txtUsuario.Text.Trim();
+                var frm = new FormPrincipal();
+                frm.StartPosition = FormStartPosition.CenterScreen;
+                frm.Show();
+                this.Hide();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error al conectar con la base: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Usuario o contraseña incorrectos", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
 
 

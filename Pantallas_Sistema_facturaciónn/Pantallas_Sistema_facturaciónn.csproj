@@ -47,6 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClasesEmpleados\DatosEmpleado.cs" />
+    <Compile Include="ClasesEmpleados\EmpleadosBD.cs" />
+    <Compile Include="ClasesEmpleados\EmpleadosLogica.cs" />
+    <Compile Include="ClasesIngresoUsuarios\DatosUsuario.cs" />
+    <Compile Include="ClasesIngresoUsuarios\UsuariosBD.cs" />
+    <Compile Include="ClasesIngresoUsuarios\UsuariosLogica.cs" />
+    <Compile Include="ClasesSeguridad\DatosSeguridad.cs" />
+    <Compile Include="ClasesSeguridad\SeguridadBD.cs" />
+    <Compile Include="ClasesSeguridad\SeguridadLogica.cs" />
     <Compile Include="Data\Conexion.cs" />
     <Compile Include="FormClientes.cs">
       <SubType>Form</SubType>
@@ -66,6 +75,18 @@
     <Compile Include="FormSeguridad.Designer.cs">
       <DependentUpon>FormSeguridad.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmEmpleados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEmpleados.Designer.cs">
+      <DependentUpon>frmEmpleados.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmListaEmpleados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmListaEmpleados.Designer.cs">
+      <DependentUpon>frmListaEmpleados.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +104,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormSeguridad.resx">
       <DependentUpon>FormSeguridad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmEmpleados.resx">
+      <DependentUpon>frmEmpleados.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmListaEmpleados.resx">
+      <DependentUpon>frmListaEmpleados.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
@@ -109,5 +136,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

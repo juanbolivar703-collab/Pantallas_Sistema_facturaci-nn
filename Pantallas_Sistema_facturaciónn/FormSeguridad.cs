@@ -2,11 +2,17 @@
 using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using Pantallas_Sistema_facturaciónn.ClasesSeguridad;
+
 
 namespace Pantallas_Sistema_facturaciónn
 {
     public partial class FormSeguridad : Form
     {
+
+        private readonly SeguridadLogica seguridad = new SeguridadLogica();
+
+
         private int? _idSeguridadValidado = null;
 
         public FormSeguridad()
@@ -67,50 +73,29 @@ namespace Pantallas_Sistema_facturaciónn
 
             try
             {
-                using (var cn = Conexion.GetConnection())
-                using (var cmd = cn.CreateCommand())
+                var u = seguridad.Authenticate(usuario, clave);
+                if (u != null)
                 {
-                    cn.Open();
-                    cmd.CommandText = @"
-                        SELECT TOP 1 IdSeguridad, StrUsuario, StrClave
-                        FROM dbo.TBLSEGURIDAD
-                        WHERE StrUsuario = @u AND StrClave = @p";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@u", usuario);
-                    cmd.Parameters.AddWithValue("@p", clave);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        if (rdr.Read())
-                        {
-                            _idSeguridadValidado = rdr["IdSeguridad"] != DBNull.Value ? Convert.ToInt32(rdr["IdSeguridad"]) : (int?)null;
-
-                            txtUsuarioNuevo.Text = rdr["StrUsuario"]?.ToString();
-                            txtClaveNueva.Text = rdr["StrClave"]?.ToString();
-
-                            txtUsuarioNuevo.Enabled = true;
-                            txtClaveNueva.Enabled = true;
-                            btnActualizar.Enabled = true;
-
-                            MessageBox.Show("Acceso correcto. Ahora puede cambiar usuario y/o contraseña.", "Acceso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Usuario o contraseña actuales incorrectos.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            InicializarFormulario();
-                        }
-                    }
+                    _idSeguridadValidado = u.IdSeguridad;
+                    txtUsuarioNuevo.Text = u.StrUsuario;
+                    txtClaveNueva.Text = u.StrClave;
+                    txtUsuarioNuevo.Enabled = true;
+                    txtClaveNueva.Enabled = true;
+                    btnActualizar.Enabled = true;
+                    MessageBox.Show("Acceso correcto. Ahora puede cambiar usuario y/o contraseña.", "Acceso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Usuario o contraseña actuales incorrectos.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    InicializarFormulario();
                 }
             }
-            catch (SqlException ex)
-            {
-                MessageBox.Show("Error de base de datos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private bool ValidarNuevos()
         {
@@ -149,48 +134,20 @@ namespace Pantallas_Sistema_facturaciónn
 
             try
             {
-                using (var cn = Conexion.GetConnection())
-                using (var cmd = cn.CreateCommand())
-                {
-                    cn.Open();
-                    cmd.CommandText = @"
-                        UPDATE dbo.TBLSEGURIDAD
-                        SET StrUsuario = @nu,
-                            StrClave = @np,
-                            DtmFechaModifica = GETDATE(),
-                            StrUsuarioModifica = @editor
-                        WHERE IdSeguridad = @id";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@nu", nuevoUsuario);
-                    cmd.Parameters.AddWithValue("@np", nuevaClave);
-                    cmd.Parameters.AddWithValue("@editor", Session.CurrentUser ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@id", _idSeguridadValidado.Value);
+                seguridad.UpdateCredentialsByIdSeguridad(_idSeguridadValidado.Value, nuevoUsuario, nuevaClave, Session.CurrentUser ?? Environment.UserName);
+                MessageBox.Show("Usuario actualizado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    int filas = cmd.ExecuteNonQuery();
-                    if (filas > 0)
-                    {
-                        MessageBox.Show("Usuario actualizado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (string.Equals(txtUsuarioActual.Text.Trim(), Session.CurrentUser, System.StringComparison.OrdinalIgnoreCase))
+                    Session.CurrentUser = nuevoUsuario;
 
-                        if (string.Equals(txtUsuarioActual.Text.Trim(), Session.CurrentUser, StringComparison.OrdinalIgnoreCase))
-                            Session.CurrentUser = nuevoUsuario;
-
-                        InicializarFormulario();
-                    }
-                    else
-                    {
-                        MessageBox.Show("No se realizó ninguna actualización.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
+                InicializarFormulario();
             }
-            catch (SqlException ex)
+            catch (System.Exception ex)
             {
-                MessageBox.Show("Error SQL: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al actualizar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void btnSalir_Click(object sender, EventArgs e)
         {
