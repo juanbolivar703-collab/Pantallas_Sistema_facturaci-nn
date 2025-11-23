@@ -37,5 +37,12 @@ namespace Pantallas_Sistema_facturaciónn
             frm.StartPosition = FormStartPosition.CenterScreen;
             frm.ShowDialog(this);
         }
+
+        private void productosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var frm = new Pantallas_Sistema_facturaciónn.Formularios.frmProductos();
+            frm.StartPosition = FormStartPosition.CenterScreen;
+            frm.Show(this);
+        }
     }
 }
